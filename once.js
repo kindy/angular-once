@@ -87,14 +87,6 @@
       }
     },
     {
-      name: 'onceIf',
-      binding: function (element, value) {
-        if (!value) {
-          element.remove();
-        }
-      }
-    },
-    {
       name: 'onceClass',
       binding: function (element, value) {
         if (angular.isObject(value) && !angular.isArray(value)) {
@@ -138,6 +130,22 @@
   ];
 
   angular.forEach(bindingsDefinitions, makeBindingDirective);
+
+  once.directive('onceIf', function() {
+    return {
+      priority: 600,
+      transclude: 'element',
+      terminal: true,
+      link: function ($scope, element, attrs, ctrl, $transclude) {
+        if ($scope.$eval(attrs.onceIf)) {
+          $transclude(function(clone) {
+            // TODO: use $animate.enter ?
+            element.after(clone);
+          });
+        }
+      }
+    };
+  });
 
   once.directive('once', function () {
 
